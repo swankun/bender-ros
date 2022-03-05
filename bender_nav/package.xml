@@ -10,6 +10,9 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>navigation</build_depend>
+  <depend>actionlib</depend>
+  <depend>actionlib_tutorials</depend>
+  <depend>roscpp</depend>
   <exec_depend>move_base</exec_depend>
   <exec_depend>teb_local_planner</exec_depend>
   <exec_depend>map_server</exec_depend>
