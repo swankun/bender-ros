@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   actionlib
   control_msgs
   controller_manager
+  diagnostic_updater
   hardware_interface
   joint_limits_interface
   odrive_can_ros

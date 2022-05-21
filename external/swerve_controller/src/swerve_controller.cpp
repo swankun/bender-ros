@@ -377,6 +377,14 @@ namespace swerve_controller
             rh_steering = atan2(a, d);
         }
 
+        // Guarantee minimum angle difference to next steer angle by using previous steer angle
+        if (enable_min_steering_difference_){
+            minSteeringDifference(lf_steering, lf_steering_last, lf_speed);
+            minSteeringDifference(rf_steering, rf_steering_last, rf_speed);
+            minSteeringDifference(lh_steering, lh_steering_last, lh_speed);
+            minSteeringDifference(rh_steering, rh_steering_last, rh_speed);
+        }
+
         // Invert wheel speed or brake if steering angle exceeds desired limits
         if (!clipSteeringAngle(lf_steering, lf_speed) ||
             !clipSteeringAngle(rf_steering, rf_speed) ||
@@ -386,14 +394,6 @@ namespace swerve_controller
             ROS_WARN("Braking because clipped steering angle was impossible to reach");
             brake();
             return;
-        }
-
-        // Guarantee minimum angle difference to next steer angle by using previous steer angle
-        if (enable_min_steering_difference_){
-            minSteeringDifference(lf_steering, lf_steering_last, lf_speed);
-            minSteeringDifference(rf_steering, rf_steering_last, rf_speed);
-            minSteeringDifference(lh_steering, lh_steering_last, lh_speed);
-            minSteeringDifference(rh_steering, rh_steering_last, rh_speed);
         }
 
         // Set wheels velocities
