@@ -39,6 +39,9 @@
 #include <boost/thread.hpp>
 #include <boost/chrono.hpp>
 
+#include <diagnostic_updater/diagnostic_updater.h>
+#include <diagnostic_updater/publisher.h>
+
 #include <controller_manager/controller_manager.h>
 #include <ros/ros.h>
 #include <rosserial_server/serial_session.h>
@@ -47,7 +50,11 @@
 
 typedef boost::chrono::steady_clock time_source;
 
-void controlThread(ros::Rate rate, bender_base::BenderHardware* robot, controller_manager::ControllerManager* cm)
+void controlThread(ros::Rate rate, 
+  bender_base::BenderHardware* robot, 
+  controller_manager::ControllerManager* cm, 
+  diagnostic_updater::Updater* diag
+)
 {
   time_source::time_point last_time = time_source::now();
 
@@ -62,6 +69,7 @@ void controlThread(ros::Rate rate, bender_base::BenderHardware* robot, controlle
     robot->read();
     cm->update(ros::Time::now(), elapsed);
     robot->write();
+    diag->update();
     rate.sleep();
   }
 }
@@ -79,13 +87,15 @@ int main(int argc, char* argv[])
   new rosserial_server::SerialSession(io_service, port, 115200);
   boost::thread(boost::bind(&boost::asio::io_service::run, &io_service));
 
+  // Create diagnostic updater, to update itself on the ROS thread.
+  diagnostic_updater::Updater diag;
+  diag.add("Bender diagnostic", &bender, &bender_base::BenderHardware::produce_diagnostics);
+
   // Background thread for the controls callback.
   ros::NodeHandle controller_nh("/bender");
   controller_manager::ControllerManager cm(&bender, controller_nh);
-  boost::thread(boost::bind(controlThread, ros::Rate(50), &bender, &cm));
+  boost::thread(boost::bind(controlThread, ros::Rate(50), &bender, &cm, &diag));
 
-  // Create diagnostic updater, to update itself on the ROS thread.
-  // bender_base::BenderDiagnosticUpdater bender_diagnostic_updater;
 
   // Foreground ROS spinner for ROS callbacks, including rosserial, diagnostics
   ros::spin();

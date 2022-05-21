@@ -3,6 +3,8 @@
 
 #include <boost/thread.hpp>
 
+#include <diagnostic_updater/diagnostic_updater.h>
+
 #include <hardware_interface/joint_command_interface.h>
 #include <hardware_interface/joint_state_interface.h>
 #include <hardware_interface/robot_hw.h>
@@ -29,6 +31,7 @@ class BenderHardware : public hardware_interface::RobotHW
         ~BenderHardware();
         void read();
         void write();
+        void produce_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat);
 
     protected:
         void feedbackCallback(const sensor_msgs::JointState::ConstPtr& msg);

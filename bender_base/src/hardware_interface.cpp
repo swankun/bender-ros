@@ -153,4 +153,12 @@ void BenderHardware::feedbackCallback(const sensor_msgs::JointState::ConstPtr& m
 	feedback_msg_ = msg;
 }
 
+
+void produce_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
+{
+    stat.summary(diagnostic_msgs::DiagnosticStatus::WARN, "This is a silly updater.");
+    stat.add("Stupidicity of this updater", 1000.);
+}
+
+
 }  // namespace bender_base
