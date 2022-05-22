@@ -34,6 +34,9 @@
         pkg="tf2_ros" type="static_transform_publisher" 
         args="0 $(arg y) 0 $(arg yaw) 0 0 map odom" output="screen" />
 
+    <!-- Launch ekf -->
+    <include file="$(find bender_localization)/launch/localization_local.launch" />
+
     <!-- Launch move_base -->
     <include file="$(find bender_nav)/launch/move_base.launch" />
    
